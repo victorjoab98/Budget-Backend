@@ -1,4 +1,5 @@
 const {Model, DataTypes, Sequelize } = require('sequelize');
+const { ACCOUNT_TABLE } = require('./Account');
 
 const TRANSFER_TABLE = "transfers";
 const TRANSFER_MODEL_NAME = "Transfer";
@@ -11,10 +12,12 @@ const TransferSchema = {
         type: DataTypes.BIGINT
     },//Debit Info
     debitAmount:{
+        field:'debit_amount',
         allowNull: false,
         type: DataTypes.DOUBLE
     },
     debitCurrency: {
+        field: 'debit_currency',
         allowNull: false,
         type: DataTypes.STRING
     },
@@ -23,16 +26,18 @@ const TransferSchema = {
         field: 'debit_account',
         type: DataTypes.INTEGER,
         references: {
-            model: TRANSFER_TABLE,
+            model: ACCOUNT_TABLE,
             key: 'id'
         },
         onUpdate: 'CASCADE'
     },//Credit Info
     creditAmount:{
+        field: 'credit_amount',
         allowNull: false,
         type: DataTypes.DOUBLE
     },
     creditCurrency:{
+        field: 'credit_currency',
         allowNull: false,
         type: DataTypes.STRING
     },
@@ -41,10 +46,15 @@ const TransferSchema = {
         field: 'credit_account',
         type: DataTypes.INTEGER,
         references: {
-            model: TRANSFER_TABLE,
+            model: ACCOUNT_TABLE,
             key: 'id'
         },
         onUpdate: 'CASCADE'
+    },
+    exchangeRate: {
+        field: 'exchange_rate',
+        allowNull: false,
+        type: DataTypes.DOUBLE
     },
     createdAt: {
         allowNull: false,
@@ -59,6 +69,7 @@ class Transfer extends Model{
             sequelize,
             tableName: TRANSFER_TABLE,
             modelName: TRANSFER_MODEL_NAME,
+            timestamps: false
         }
     }
 }

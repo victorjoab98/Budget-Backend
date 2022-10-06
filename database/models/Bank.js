@@ -12,6 +12,7 @@ const BankSchema = {
     },
     name: {
         allowNull: false,
+        unique: true,
         type: DataTypes.STRING
     }
 }

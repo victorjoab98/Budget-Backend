@@ -7,6 +7,8 @@
     "start": "nodemon index.js",
     "migrations:generate": "sequelize-cli migration:generate --name",
     "migrations:run": "sequelize-cli db:migrate",
+    "seeders:generate": "sequelize-cli seed:generate --name",
+    "seeders:run": "sequelize-cli db:seed:all --debug",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

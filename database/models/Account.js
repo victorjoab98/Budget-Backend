@@ -1,5 +1,6 @@
-const {Model, DataTypes } = require('sequelize');
+const {Model, DataTypes, Sequelize } = require('sequelize');
 const { BANK_TABLE } = require('./Bank');
+const { CURRENCY_TABLE } = require('./Currency');
 const { CUSTOMER_TABLE } = require('./Customer');
 
 const ACCOUNT_TABLE = "account";
@@ -15,15 +16,22 @@ const AccountSchema = {
     numberAccount: {
         allowNull: false,
         field: 'no_account',
-        type: DataTypes.BIGINT
-    },
-    currency: {
-        allowNull: false,
         type: DataTypes.STRING
     },
     balance: {
         allowNull: false,
         type: DataTypes.DOUBLE
+    },
+    currencyId: {
+        field: 'currency_id',
+        allowNull: false,
+        type: DataTypes.INTEGER,
+        references: {
+            model: CURRENCY_TABLE,
+            key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
     },
     bankId: {
         field: 'bank_id',
@@ -46,17 +54,21 @@ const AccountSchema = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
-    }
-
+    }, 
+    createdAt: {
+        field: 'creted_at',
+        type: Sequelize.DATE,
+    },
 }
 
 class Account extends Model{
 
     static associate( models ){
         
-        this.hasMany( models.Transfer, { as: 'expense', foreignKey: 'debitAccount', } );
-        this.hasMany( models.Transfer, { as: 'income', foreignKey: 'creditAccount', } );
+        this.hasMany( models.Transfer, { as: 'expense', foreignKey: 'debit_account', } );
+        this.hasMany( models.Transfer, { as: 'income', foreignKey: 'credit_account', } );
 
+        this.belongsTo( models.Currency, { as: 'currency', foreignKey: 'currencyId'});
         this.belongsTo( models.Bank, { as: 'bank', foreignKey: 'bankId'}); 
         this.belongsTo( models.Customer, { as: 'customer', foreignKey: 'customerId'}); 
     }
@@ -66,7 +78,7 @@ class Account extends Model{
             sequelize,
             tableName: ACCOUNT_TABLE,
             modelName: ACCOUNT_MODEL_NAME,
-            timestamps: true
+            timestamps: false
         }
     }
 }

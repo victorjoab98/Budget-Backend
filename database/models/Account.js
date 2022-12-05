@@ -65,8 +65,7 @@ class Account extends Model{
 
     static associate( models ){
         
-        this.hasMany( models.Transfer, { as: 'expense', foreignKey: 'debit_account', } );
-        this.hasMany( models.Transfer, { as: 'income', foreignKey: 'credit_account', } );
+        this.hasMany( models.Record, { as: 'records', foreignKey: 'accountId' } );
 
         this.belongsTo( models.Currency, { as: 'currency', foreignKey: 'currencyId'});
         this.belongsTo( models.Bank, { as: 'bank', foreignKey: 'bankId'}); 

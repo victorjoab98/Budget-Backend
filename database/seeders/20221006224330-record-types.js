@@ -1,6 +1,6 @@
 'use strict';
 
-const { BANK_TABLE } = require('../models/Bank');
+const { RECORD_TYPE_TABLE } = require('../models/RecordType');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -14,32 +14,20 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-     await queryInterface.bulkInsert(BANK_TABLE, [
-      {
-        id: 0,
-        name: '---',
-      },
+    await queryInterface.bulkInsert(RECORD_TYPE_TABLE, [
       {
         id: 1,
-        name: 'Banco de Desarrollo Rural, S.A.',
+        name: 'Income'
       },
       {
         id: 2,
-        name: 'Banco Industrial, S.A.',
+        name: 'Expense'
       },
       {
         id: 3,
-        name: 'Banco Promerica',
-      },
-      {
-        id: 4,
-        name: 'Banco G&T Continental, S.A.',
-      },
-      {
-        id: 5,
-        name: 'Banco Fichosa Guatemala',
+        name: 'Transfer'
       }
-    ], {});
+    ], {}); 
   },
 
   async down (queryInterface, Sequelize) {

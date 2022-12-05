@@ -2,7 +2,6 @@ const joi = require('joi');
 
 const integer = joi.number().integer();
 const double = joi.number();
-const string = joi.string();
 
 
 const newTransferValidator = joi.object({

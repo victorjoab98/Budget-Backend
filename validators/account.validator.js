@@ -12,6 +12,14 @@ const newAccountValidator = joi.object({
     customerId: integer.required()
 });
 
+const accountIdValidator = joi.object({
+    accountId: integer.required()
+});
+
+const updateBalanceValidator = joi.object({
+    newBalance: joi.number().required()
+});
+
 const getCustomerAccounts =  joi.object({
     customerId: integer.required()
 });
@@ -22,6 +30,8 @@ const getAccount = joi.object({
 
 module.exports = {
     newAccountValidator,
+    accountIdValidator,
+    updateBalanceValidator,
     getCustomerAccounts,
     getAccount
 }

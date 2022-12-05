@@ -1,13 +1,13 @@
 const BankService = require('./bank.service');
 const CurrencyService = require('./currency.service');
-const CustomerService = require('./customer.service');
 const { sequelize } = require('../database/connection');
 const { ExceptionMessage } = require('../exceptions/generic.exception');
 const { models } = sequelize;
+const moment = require('moment');
+const { Op } = require('sequelize');
 
 const bankService = new BankService();
 const currencyService = new CurrencyService();
-const customerService = new CustomerService();
 
 class AccountService{
     async createAccount(data){
@@ -20,7 +20,8 @@ class AccountService{
             
             const bank = await bankService.findOneByProp('id', data.bankId, transaction);
             const currency = await currencyService.findOneByProp('id', data.currencyId, transaction);
-            const customer = await customerService.findOneByProp('id', data.customerId, transaction);
+            const customer = await models.Customer.findOne({ where: { id: data.customerId } }, { transaction });
+
 
             const newAccount = await models.Account.create({
                 numberAccount: data.numberAccount,
@@ -34,6 +35,22 @@ class AccountService{
             await transaction.commit();
             return newAccount;
 
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
+    }
+
+    async updateBalance( accountId, newBalance ){
+        const transaction = await sequelize.transaction();
+        try {
+            const account = await this.findOneByProp('id', accountId, transaction);
+            if(!account){
+                throw new ExceptionMessage(`There is no account with id: ${accountId}`, `Account not found`);
+            }
+            await account.update({ balance: newBalance }, transaction);
+            await transaction.commit();
+            return account;
         } catch (error) {
             await transaction.rollback();
             throw error;
@@ -67,9 +84,37 @@ class AccountService{
             include: [
                 { model: models.Bank, as: 'bank', attributes: ['name'] },
                 { model: models.Currency, as: 'currency' }
-            ]   
+            ],
+            order: [ ['createdAt', 'ASC'] ]
         });
         return accounts;
+    }
+
+    async getPercentageTypeRecords( customerId ){
+        const records = await models.Record.findAll({
+            where: { 
+                userId : customerId,
+                createdAt: {
+                    [Op.gte]: moment().subtract(30, 'days').toDate()
+                } 
+            },
+            attributes: ['id', 'recordTypeId' ],
+            include: [
+                { model: models.RecordType, as: 'recordtype_ref' }
+            ]
+        });
+
+        const incomeRecords = records.filter( record => record.recordtype_ref.name === 'Income' ).length; 
+        const expenseRecords = records.filter( record => record.recordtype_ref.name === 'Expense' ).length; 
+        const transferRecords = records.filter( record => record.recordtype_ref.name === 'Transfer' ).length; 
+
+
+        const totalRecords = incomeRecords + expenseRecords + transferRecords;
+        return {
+            Income: ((incomeRecords * 100) / totalRecords).toFixed(2),
+            Expense: ((expenseRecords * 100) / totalRecords).toFixed(2),
+            Transfer: ((transferRecords * 100) / totalRecords).toFixed(2),
+        };
     }
 }
 

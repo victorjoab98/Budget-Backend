@@ -1,5 +1,7 @@
 const { sequelize } = require('../database/connection');
 const { ExceptionMessage } = require('../exceptions/generic.exception');
+const signToken = require('../utils/signToken');
+const AccountService = require('./account.service');
 const UserService = require('./user.service');
 const { models } = sequelize;
 
@@ -21,8 +23,40 @@ class CustomerService{
                 userId: newUser.dataValues.id,
             }, {transaction});
 
+            await models.Account.create({
+                numberAccount: `Cash`,
+                balance: 0,
+                currencyId: customerData.preferredCurrency,
+                bankId: 0,
+                customerId: newCustomer.id,
+                createdAt: new Date()
+            }, { transaction });
+
+            const token = signToken(
+                { 
+                    id: newUser.dataValues.id, 
+                    username: newUser.dataValues.username, 
+                    name: newCustomer.dataValues.name,
+                    email: newCustomer.dataValues.email,
+                    customerId: newCustomer.dataValues.id 
+                }
+            );
+
+            const user = {
+                id: newUser.dataValues.id, 
+                username: newUser.dataValues.username, 
+                customer: {
+                    id: newCustomer.dataValues.id,
+                    name: newCustomer.dataValues.name,
+                    email: newCustomer.dataValues.email,
+                }
+            };
+
             await transaction.commit();
-            return newCustomer
+            return {
+                token,
+                user
+            };
         } catch (error) {
             await transaction.rollback();
             throw error;

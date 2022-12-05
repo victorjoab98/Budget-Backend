@@ -7,7 +7,8 @@ const environment = {
     dbUser: process.env.DB_USER || 'root',
     dbPassword: process.env.DB_PASSWORD || 'root',
     dbDialect: process.env.DB_DIALECT || 'postgres',
-    dbName: process.env.DB_NAME || 'budget-db'
+    dbName: process.env.DB_NAME || 'budget-db',
+    jwtSecret: process.env.JWT_SECRET
 }
 
 module.exports = environment 

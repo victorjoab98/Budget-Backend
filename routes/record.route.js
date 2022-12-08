@@ -4,6 +4,7 @@ const { newRecordValidator, newTransferValidator } = require('../validators/reco
 const router = Router();
 
 const RecordService = require('../services/record.service');
+const { validateTokenMiddleware } = require('../middlewares/token.middleware');
 const recordService = new RecordService();
 
 router.post(
@@ -21,6 +22,7 @@ router.post(
 
 router.post(
     '/transfer/',
+    validateTokenMiddleware,
     validatorMiddleware(newTransferValidator, 'body'),
     async (req, res, next) => {
         try {

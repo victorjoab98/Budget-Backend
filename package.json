@@ -4,7 +4,8 @@
   "description": "Backend code of the Budget App",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "migrations:generate": "sequelize-cli migration:generate --name",
     "migrations:run": "sequelize-cli db:migrate",
     "seeders:generate": "sequelize-cli seed:generate --name",

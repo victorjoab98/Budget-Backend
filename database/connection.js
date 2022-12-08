@@ -12,6 +12,7 @@ const testConnectionDB = async()=>{
         console.log("Successfully connected to database.")
     } catch (error) {
         console.log("Failed connection to database.")
+        console.log(error)
     }
 }
 
